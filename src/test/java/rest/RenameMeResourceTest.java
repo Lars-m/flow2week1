@@ -1,6 +1,6 @@
 package rest;
 
-import entities.RenameMe;
+import entities.Person;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
@@ -70,9 +70,9 @@ public class RenameMeResourceTest {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.createNamedQuery("RenameMe.deleteAllRows").executeUpdate();
-            em.persist(new RenameMe("Some txt","More text"));
-            em.persist(new RenameMe("aaa","bbb"));
+            em.createNamedQuery("Person.deleteAllRows").executeUpdate();
+            em.persist(new Person("Kim","Hansen","123456789"));
+            em.persist(new Person("pia","Hansen","111111111"));
            
             em.getTransaction().commit();
         } finally {
