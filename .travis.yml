@@ -2,13 +2,12 @@
 ## Make sure to rename the database name in the CREATE DATABASE script below to the SAME name as used for your local tests
 ---
 
-dist: bionic
-#dist: trusty
+# dist: bionic
 
 language: java
 
-jdk:
-- openjdk8
+#jdk:
+#- openjdk8
 
 cache:
   directories:  
