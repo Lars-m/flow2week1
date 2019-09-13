@@ -128,5 +128,21 @@ public class PersonResourceTest {
         .body("fName",equalTo("Ib"))
         .body("lName",equalTo("Ibsen"));
     }
+    
+    @Test
+    public void editPerson() throws Exception {
+        //change Kim's phone number and last name
+        p1.setPhone("1111");
+        p1.setLastName("Petersen");
+        given()    
+        .contentType("application/json")
+        .body(new PersonDTO(p1.getFirstName(),p1.getLastName(),p1.getPhone()))
+        .when()
+        .put("/person/{id}",p1.getId())
+        .then()
+        .log().body()
+        .body("lName",equalTo("Petersen"))
+        .body("phone",equalTo("1111"));
+    }
 
 }

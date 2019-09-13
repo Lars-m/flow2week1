@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import dtomappers.PersonDTO;
 import dtomappers.PersonsDTO;
 import entities.Person;
+import exceptions.PersonNotFoundException;
 import utils.EMF_Creator;
 import facades.PersonFacade;
 import javax.persistence.EntityManagerFactory;
@@ -48,6 +49,18 @@ public class PersonResource {
         PersonDTO p = GSON.fromJson(person,PersonDTO.class);
         Person pAdded = FACADE.addPerson(p.getfName(), p.getlName(), p.getPhone());
         return GSON.toJson(new PersonDTO(pAdded));
+    }
+    
+    @PUT
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("{id}")
+    public String edit(@PathParam("id") long id,String person) throws PersonNotFoundException {
+        PersonDTO p = GSON.fromJson(person,PersonDTO.class);
+        Person pToEdit = new Person(p.getfName(),p.getlName(),p.getPhone());
+        pToEdit.setId(id);
+        Person editedPerson = FACADE.editPerson(pToEdit);
+        return GSON.toJson(new PersonDTO(editedPerson));
     }
     
     @GET
