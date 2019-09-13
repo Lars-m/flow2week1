@@ -6,9 +6,10 @@ To use "as is" create these two databases locally (you probably already have the
 
 This code uses a slightly changed version of EMF_Creator and config.properties that will make it possible to have more than one project on your droplet.
 
-Add this line to `/opt/tomcat/bin/setenv.sh` on your droplet (assuming you allready have added valuer for DEPLOYED, USER and PW
+Add this line to `/opt/tomcat/bin/setenv.sh` on your droplet (assuming you allready have added values for DEPLOYED, USER and PW
 
 `export CONNECTION_STR_PERSON="jdbc:mysql://localhost:3306/person"`
+
 Remember to restart Tomcat and to create the database person
 
 See config.properties and EMF_Creator.java for how this works **I would really like some feedback on this solution as to whether is should be include in the start code**
