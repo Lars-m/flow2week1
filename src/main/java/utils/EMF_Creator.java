@@ -41,6 +41,14 @@ public class EMF_Creator {
             }
         }
     }
+    
+    public static void setIsIntegrationTestWithDB(boolean isTest){
+        if(isTest){
+            System.setProperty("IS_TEST", "testing");
+        } else{
+           System.clearProperty("IS_TEST"); 
+        }
+    }
 
     /**
      * Create an EntityManagerFactory using values set in 'config.properties'
@@ -60,10 +68,11 @@ public class EMF_Creator {
             connection_str = Settings.getDEV_DBConnection();
             user = Settings.getPropertyValue("db.user");
             pw = Settings.getPropertyValue("db.password");
+            //System.clearProperty("IS_TEST");
         } else{          
             connection_str = Settings.getTEST_DBConnection();
             //Will ensure REST code "switches" to this DB, even when running on a separate JVM
-            System.setProperty("IS_TEST", connection_str);
+            //System.setProperty("IS_TEST", connection_str);
             user = Settings.getPropertyValue("dbtest.user")!= null ? Settings.getPropertyValue("dbtest.user") : Settings.getPropertyValue("db.user") ;
             pw = Settings.getPropertyValue("dbtest.password")!= null ? Settings.getPropertyValue("dbtest.password") : Settings.getPropertyValue("db.password") ;
         }
@@ -88,9 +97,10 @@ public class EMF_Creator {
         Properties props = new Properties();
         
         //A test running on a different thread can alter values to use via these properties
-        System.out.println("IS Testing: " + System.getProperty("IS_TEST"));
         if (System.getProperty("IS_TEST") != null) {
-            connection_str = System.getProperty("IS_TEST");
+            System.out.println("--------- IS_TEST --------------------------- ");
+            connection_str = Settings.getTEST_DBConnection();
+            //connection_str = System.getProperty("IS_TEST");
             user = System.getProperty("USER") != null ? System.getProperty("USER") : user;
             pw = System.getProperty("PW") != null ? System.getProperty("PW") : pw;
         }

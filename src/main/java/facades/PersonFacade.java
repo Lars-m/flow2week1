@@ -2,6 +2,7 @@ package facades;
 
 import entities.Person;
 import exceptions.PersonNotFoundException;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -38,7 +39,7 @@ public class PersonFacade implements IPersonFacade {
     }
 
     //TODO Remove/Change this before use
-    public long getRenameMeCount() {
+    public long getPersonCount() {
         EntityManager em = emf.createEntityManager();
         try {
             long renameMeCount = (long) em.createQuery("SELECT COUNT(r) FROM Person r").getSingleResult();
@@ -67,8 +68,8 @@ public class PersonFacade implements IPersonFacade {
     public Person deletePerson(long id) throws PersonNotFoundException {
         EntityManager em = getEntityManager();
         Person person = em.find(Person.class, id);
-        if(person == null){
-            throw new PersonNotFoundException(String.format("Person with id: (%d) not found",id));
+        if (person == null) {
+            throw new PersonNotFoundException(String.format("Person with id: (%d) not found", id));
         }
         try {
             em.getTransaction().begin();
@@ -81,18 +82,48 @@ public class PersonFacade implements IPersonFacade {
     }
 
     @Override
-    public Person getPerson(long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Person getPerson(long id) throws PersonNotFoundException {
+        EntityManager em = getEntityManager();
+        try {
+            Person person = em.find(Person.class, id);
+            if (person == null) {
+                throw new PersonNotFoundException(String.format("Person with id: (%d) not found", id));
+            }
+            return person;
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public List<Person> getAllPersons() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT p from Person p").getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     @Override
-    public Person editPerson(Person p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Person editPerson(Person p) throws PersonNotFoundException {
+        EntityManager em = getEntityManager();
+        Person person = em.find(Person.class, p.getId());
+        if (person == null) {
+            throw new PersonNotFoundException(String.format("Person with id: (%d) not found", p.getId()));
+        }
+        person.setFirstName(p.getFirstName());
+        person.setLastName(p.getLastName());
+        person.setPhone(p.getPhone());
+        try {
+            em.getTransaction().begin();
+            person.setLastEdited(new Date());
+            em.merge(person);
+            em.getTransaction().commit();
+            return person;
+        } finally {
+            em.close();
+        }
     }
 
 }

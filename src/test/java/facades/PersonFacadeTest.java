@@ -3,9 +3,11 @@ package facades;
 import utils.EMF_Creator;
 import entities.Person;
 import exceptions.PersonNotFoundException;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -16,6 +18,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import utils.EMF_Creator.DbSelector;
 import utils.EMF_Creator.Strategy;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
@@ -64,8 +69,8 @@ public class PersonFacadeTest {
 
     // TODO: Delete or change this method 
     @Test
-    public void testAFacadeMethod() {
-        assertEquals(2, facade.getRenameMeCount(), "Expects two rows in the database");
+    public void testGetPersonsCount() {
+        assertEquals(2, facade.getPersonCount(), "Expects two rows in the database");
     }
 
     @Test
@@ -83,7 +88,7 @@ public class PersonFacadeTest {
     }
 
     @Test
-    public void deleteExcistinPerson() throws PersonNotFoundException {
+    public void deleteExcistingPerson() throws PersonNotFoundException {
         facade.deletePerson(p1.getId()); //Delete Kim
         EntityManager em = emf.createEntityManager();
         try {
@@ -95,11 +100,40 @@ public class PersonFacadeTest {
     }
 
     @Test
-    public void deleteNotExcistinPerson() throws PersonNotFoundException {
-
+    public void deleteNotExcistingPerson() throws PersonNotFoundException {
         Assertions.assertThrows(PersonNotFoundException.class, () -> {
             facade.deletePerson(786545242);
         });
     }
+    
+    @Test
+    public void findExcistingPerson() throws PersonNotFoundException{
+        Person person = facade.getPerson(p1.getId());
+        assertEquals("Kim", person.getFirstName(),"Expects to find Kim");
+    }
 
+    @Test
+    public void findNonExcistingPerson() throws PersonNotFoundException {
+        Assertions.assertThrows(PersonNotFoundException.class, () -> {
+            facade.getPerson(786545242);
+        });
+    }
+    
+    @Test
+    public void getAllPersons(){
+        List<Person> persons = facade.getAllPersons();
+        assertThat(persons, hasSize(2));
+        //assertThat(persons,hasItems(p1,p2));
+        assertThat(persons,containsInAnyOrder(p1,p2));
+    }
+    
+    @Test
+    public void editExistingPerson() throws PersonNotFoundException{
+        p1.setPhone("555");
+        long lastEditedBefore = p1.getLastEdited().getTime();
+        Person pEdited = facade.editPerson(p1);
+        assertEquals(p1.getPhone(), pEdited.getPhone());
+        assertThat(pEdited.getLastEdited().getTime(),greaterThan(lastEditedBefore));
+    }
+    
 }
