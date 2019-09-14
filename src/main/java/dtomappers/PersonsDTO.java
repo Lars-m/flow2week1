@@ -15,15 +15,14 @@ public class PersonsDTO {
         });
     }
 
-    public PersonsDTO() {
-    }
+    public PersonsDTO() {}
 
     public List<PersonDTO> getPersonDTOs() {
         return all;
     }
-
-    public void setPersonDTOs(List<PersonDTO> personDTOs) {
-        this.all = personDTOs;
-    }
+//
+//    public void setPersonDTOs(List<PersonDTO> personDTOs) {
+//        this.all = personDTOs;
+//    }
     
 }

@@ -68,7 +68,8 @@ public class PersonResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String allPersons() {
         PersonsDTO persons = new PersonsDTO(FACADE.getAllPersons());
-        return GSON.toJson(persons.getPersonDTOs());
+        //return GSON.toJson(persons.getPersonDTOs());
+        return GSON.toJson(persons);
     }
     
     

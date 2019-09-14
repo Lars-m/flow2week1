@@ -111,7 +111,7 @@ public class PersonResourceTest {
         .contentType("application/json")
         .get("/person/all")
         .then()
-        .extract().body().jsonPath().getList(".",PersonDTO.class);
+        .extract().body().jsonPath().getList("all",PersonDTO.class);
         PersonDTO p1DTO = new PersonDTO(p1);
         PersonDTO p2DTO = new PersonDTO(p2);
         assertThat(personDTOs,containsInAnyOrder(p1DTO,p2DTO));            

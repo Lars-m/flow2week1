@@ -22,8 +22,7 @@ public class PersonDTO {
         this.phone = phone;        
     }
     
-    public PersonDTO() {
-    }
+    public PersonDTO() {}
     
     public long getId() {
         return id;
