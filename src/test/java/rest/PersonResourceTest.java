@@ -5,6 +5,7 @@ import entities.Person;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
+import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import java.net.URI;
 import java.util.List;
@@ -31,6 +32,9 @@ import utils.EMF_Creator.Strategy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
@@ -64,7 +68,6 @@ public class PersonResourceTest {
     
     @AfterAll
     public static void closeTestServer(){
-        //System.in.read();
          httpServer.shutdownNow();
          EMF_Creator.setIsIntegrationTestWithDB(false);        
     }
@@ -105,10 +108,11 @@ public class PersonResourceTest {
     }
     
     @Test
-    public void all() throws Exception {
+    public void all()  {
         List<PersonDTO> personDTOs;
         personDTOs= given()    
         .contentType("application/json")
+        .when()
         .get("/person/all")
         .then()
         .extract().body().jsonPath().getList("all",PersonDTO.class);
@@ -118,7 +122,31 @@ public class PersonResourceTest {
     }
     
     @Test
-    public void addPerson() throws Exception {
+    public void findPerson()  {
+         given()    
+        .contentType("application/json")
+        .when()
+        .get("/person/find/{id}",p1.getId())
+        .then()
+        .statusCode(HttpStatus.OK_200.getStatusCode())
+        .body("id", equalTo(p1.getId().intValue()));           
+    }
+    
+     @Test
+    public void FindNonExistingPerson() {
+         given()    
+        .contentType("application/json")
+        .accept(ContentType.JSON)        
+        .when()
+        .get("/person/find/{id}",p1.getId()+10)
+        .then()
+        .statusCode(HttpStatus.NOT_FOUND_404.getStatusCode())
+        .body("code",equalTo(404))
+        .body("$",hasKey("message")); //Don't bother to check for the actual value  
+    }
+    
+    @Test
+    public void addPerson() {
         given()    
         .contentType("application/json")
         .body(new PersonDTO("Ib","Ibsen","123"))
@@ -130,7 +158,7 @@ public class PersonResourceTest {
     }
     
     @Test
-    public void editPerson() throws Exception {
+    public void editPerson() {
         //change Kim's phone number and last name
         p1.setPhone("1111");
         p1.setLastName("Petersen");
@@ -140,9 +168,40 @@ public class PersonResourceTest {
         .when()
         .put("/person/{id}",p1.getId())
         .then()
-        .log().body()
+        //.log().body()
         .body("lName",equalTo("Petersen"))
         .body("phone",equalTo("1111"));
+    }
+    @Test
+    public void deletePerson() {
+        System.out.println("------> "+p1.getId());
+         given()    
+        .contentType("application/json")
+        .accept(ContentType.JSON)        
+        .when()
+        .delete("/person/{id}",p1.getId())
+        .then()
+        .body("status",equalTo("deleted"));
+         
+         //Finally check that item was removed from DB
+         EntityManager em = emf.createEntityManager();
+         try{
+             assertThat(em.find(Person.class, p1.getId()), is(nullValue()));
+         }finally{
+             em.close();
+         } 
+    }
+    @Test
+    public void deleteNonExistingPerson() {
+         given()    
+        .contentType("application/json")
+        .accept(ContentType.JSON)        
+        .when()
+        .delete("/person/{id}",p1.getId()+10)
+        .then()
+        .statusCode(HttpStatus.NOT_FOUND_404.getStatusCode())
+        .body("code",equalTo(404))
+        .body("$",hasKey("message")); //Don't bother to check for the actual value  
     }
 
 }

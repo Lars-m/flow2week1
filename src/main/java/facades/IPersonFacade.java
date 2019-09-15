@@ -5,7 +5,6 @@ import exceptions.PersonNotFoundException;
 import java.util.List;
 
 public interface IPersonFacade {
-  //public void addEntityManagerFactory(EntityManagerFactory emf);
   public Person addPerson(String fName, String lName, String phone);  
   public Person deletePerson(long id) throws PersonNotFoundException;  
   public Person getPerson(long id) throws PersonNotFoundException;  
