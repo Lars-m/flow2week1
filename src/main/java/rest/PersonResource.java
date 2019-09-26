@@ -37,7 +37,7 @@ public class PersonResource {
     
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("find/{id}")
+    @Path("{id}")
     public String getPerson(@PathParam("id") long id) throws PersonNotFoundException {
         Person found = FACADE.getPerson(id);
         return GSON.toJson(new PersonDTO(found));
@@ -81,9 +81,8 @@ public class PersonResource {
         return GSON.toJson(persons);
     }
     
-    
-    @Path("count")
     @GET
+    @Path("count")
     @Produces({MediaType.APPLICATION_JSON})
     public String getRenameMeCount() {
         long count = FACADE.getPersonCount();

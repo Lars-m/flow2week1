@@ -1,0 +1,147 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Simple Person API",
+    "description": "A simple API given as an exercises at sem 3"
+  },
+  "schemes": [
+    "http"
+  ],
+  "host": "157.230.21.103",
+  "basePath": "/flow2week1/api/person",
+  "tags": [
+    {
+      "name": "person",
+      "description": "Everything related to Person"
+    }
+  ],
+  "paths": {
+    "/all": {
+      "get": {
+        "tags": [
+          "person"
+        ],
+        "summary": "Gets all persons",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of persons",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "all": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonOut"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{id}": {
+      "get": {
+        "tags": [
+          "person"
+        ],
+        "summary": "Find a person by id",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id for person to find",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Person with the provided ID",
+            "schema": {
+              "$ref": "#/definitions/PersonOut"
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "post": {
+        "tags": [
+          "person"
+        ],
+        "summary": "Create a new Person",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/PersonIn"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the newly created person with ID",
+            "schema": {
+              "$ref": "#/definitions/PersonOut"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PersonOut": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 1000
+        },
+        "fName": {
+          "type": "string",
+          "example": "Kurt"
+        },
+        "lName": {
+          "type": "string",
+          "example": "Wonnegut"
+        },
+        "phone": {
+          "type": "string",
+          "example": "(45) 12234567"
+        }
+      }
+    },
+    "PersonIn": {
+      "type": "object",
+      "properties": {
+        "fName": {
+          "type": "string",
+          "example": "Kurt"
+        },
+        "lName": {
+          "type": "string",
+          "example": "Wonnegut"
+        },
+        "phone": {
+          "type": "string",
+          "example": "(45) 12234567"
+        }
+      }
+    }
+  }
+}

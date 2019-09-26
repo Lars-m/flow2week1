@@ -14,7 +14,7 @@ public class PersonNotFoundExceptionMapper implements ExceptionMapper<PersonNotF
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();   
     @Override
     public Response toResponse(PersonNotFoundException ex) {
-       Logger.getLogger(PersonNotFoundExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
+       //Logger.getLogger(PersonNotFoundExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
        ExceptionDTO err = new ExceptionDTO(Response.Status.NOT_FOUND.getStatusCode(),ex.getMessage());
        return Response
                .status(404)

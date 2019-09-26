@@ -42,12 +42,19 @@ public class EMF_Creator {
         }
     }
     
-    public static void setIsIntegrationTestWithDB(boolean isTest){
-        if(isTest){
-            System.setProperty("IS_TEST", "testing");
-        } else{
-           System.clearProperty("IS_TEST"); 
-        }
+    /**
+     * Call this method before all tests, in integration tests that uses the Grizzly Server and the Test Database
+     * (in  @BeforeAll )
+     * Remember to call enRestTestWithDB() (in @AfterAll)
+     */
+    public static void startREST_TestWithDB(){
+        System.setProperty("IS_INTEGRATION_TEST_WITH_DB", "testing");
+    }
+    /*
+      Call this method in your @AferAll method if startREST_TestWithDB() was previously called
+    */
+    public static void endREST_TestWithDB(){
+      System.clearProperty("IS_INTEGRATION_TEST_WITH_DB"); 
     }
 
     /**
@@ -68,11 +75,11 @@ public class EMF_Creator {
             connection_str = Settings.getDEV_DBConnection();
             user = Settings.getPropertyValue("db.user");
             pw = Settings.getPropertyValue("db.password");
-            //System.clearProperty("IS_TEST");
+            //System.clearProperty("IS_INTEGRATION_TEST_WITH_DB");
         } else{          
             connection_str = Settings.getTEST_DBConnection();
             //Will ensure REST code "switches" to this DB, even when running on a separate JVM
-            //System.setProperty("IS_TEST", connection_str);
+            //System.setProperty("IS_INTEGRATION_TEST_WITH_DB", connection_str);
             user = Settings.getPropertyValue("dbtest.user")!= null ? Settings.getPropertyValue("dbtest.user") : Settings.getPropertyValue("db.user") ;
             pw = Settings.getPropertyValue("dbtest.password")!= null ? Settings.getPropertyValue("dbtest.password") : Settings.getPropertyValue("db.password") ;
         }
@@ -97,22 +104,16 @@ public class EMF_Creator {
         Properties props = new Properties();
         
         //A test running on a different thread can alter values to use via these properties
-        if (System.getProperty("IS_TEST") != null) {
-            System.out.println("--------- IS_TEST --------------------------- ");
+        if (System.getProperty("IS_INTEGRATION_TEST_WITH_DB") != null) {
+            System.out.println("--------- IS_INTEGRATION_TEST_WITH_DB (Integration Test With DataBase --------------- ");
             connection_str = Settings.getTEST_DBConnection();
-            //connection_str = System.getProperty("IS_TEST");
+            //connection_str = System.getProperty("IS_INTEGRATION_TEST_WITH_DB");
             user = System.getProperty("USER") != null ? System.getProperty("USER") : user;
             pw = System.getProperty("PW") != null ? System.getProperty("PW") : pw;
         }
         
         //A deployment server MUST set the following values which will override the defaults
-        boolean isDeployed = (System.getenv("DEPLOYED") != null);
-//        if (isDeployed) {
-//            user = System.getenv("USER");
-//            pw = System.getenv("PW");
-//            connection_str = System.getenv("CONNECTION_STR");
-//        }
-        
+        boolean isDeployed = (System.getenv("DEPLOYED") != null);      
         if (isDeployed) {
             String remoteUserKey = Settings.getPropertyValue("remote.db.user.key");
             String remotePwKey = Settings.getPropertyValue("remote.db.password.key");

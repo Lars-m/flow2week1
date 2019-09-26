@@ -55,7 +55,7 @@ public class PersonResourceTest {
 
     @BeforeAll
     public static void setUpClass() {
-        EMF_Creator.setIsIntegrationTestWithDB(true);
+        EMF_Creator.startREST_TestWithDB();
         emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST, Strategy.CREATE);
         httpServer = startServer();
         
@@ -69,7 +69,7 @@ public class PersonResourceTest {
     @AfterAll
     public static void closeTestServer(){
          httpServer.shutdownNow();
-         EMF_Creator.setIsIntegrationTestWithDB(false);        
+         EMF_Creator.endREST_TestWithDB();        
     }
     
     // Setup the DataBase (used by the test-server and this test) in a known state BEFORE EACH TEST
@@ -121,12 +121,24 @@ public class PersonResourceTest {
         assertThat(personDTOs,containsInAnyOrder(p1DTO,p2DTO));            
     }
     
+     @Test
+    public void addPerson() {
+        given()    
+        .contentType("application/json")
+        .body(new PersonDTO("Ib","Ibsen","123"))
+        .when()
+        .post("/person")
+        .then()
+        .body("fName",equalTo("Ib"))
+        .body("lName",equalTo("Ibsen"));
+    }
+    
     @Test
     public void findPerson()  {
          given()    
         .contentType("application/json")
         .when()
-        .get("/person/find/{id}",p1.getId())
+        .get("/person/{id}",p1.getId())
         .then()
         .statusCode(HttpStatus.OK_200.getStatusCode())
         .body("id", equalTo(p1.getId().intValue()));           
@@ -144,19 +156,7 @@ public class PersonResourceTest {
         .body("code",equalTo(404))
         .body("$",hasKey("message")); //Don't bother to check for the actual value  
     }
-    
-    @Test
-    public void addPerson() {
-        given()    
-        .contentType("application/json")
-        .body(new PersonDTO("Ib","Ibsen","123"))
-        .when()
-        .post("/person")
-        .then()
-        .body("fName",equalTo("Ib"))
-        .body("lName",equalTo("Ibsen"));
-    }
-    
+       
     @Test
     public void editPerson() {
         //change Kim's phone number and last name
