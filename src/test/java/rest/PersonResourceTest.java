@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 //Uncomment the line below, to temporarily disable this test
-//@Disabled
+@Disabled
 public class PersonResourceTest {
 
     private static final int SERVER_PORT = 7777;
